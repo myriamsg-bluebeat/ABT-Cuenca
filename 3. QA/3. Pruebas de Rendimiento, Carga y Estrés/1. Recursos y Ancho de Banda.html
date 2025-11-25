@@ -1,0 +1,28 @@
+# 📊 Informe de Rendimiento – Validador Offline
+
+Este reporte documenta los resultados de pruebas de carga y sincronización de datos en el dispositivo **Validador Offline (IoT)**. Incluye métricas de velocidad, consumo de red, proyección de escalabilidad y recomendaciones técnicas.
+
+## 📂 Ubicación del archivo
+
+`QA/Reportes-Rendimiento/Validador-Offline/prueba1.html`
+
+## 📌 Contenido del reporte
+
+- Resumen de métricas por entidad
+- Análisis de throughput (descarga e inserción)
+- Proyección de escalabilidad (1 millón de registros)
+- Conclusiones y recomendaciones
+
+## 🧪 Entidades evaluadas
+
+| Entidad         | Registros | Peso Total | Velocidad |
+|-----------------|-----------|------------|-----------|
+| DNI / Tarjetas  | 86,087    | 12.25 MB   | 369 reg/s |
+| Balances        | 89,828    | 6.58 MB    | 679 reg/s |
+| Tarifas         | 5         | 0.067 MB   | Instantánea |
+
+## 📦 Recomendaciones clave
+
+- Implementar sincronización incremental (deltas)
+- Evitar descargas completas diarias
+- Considerar impacto de red en escenarios masivos
