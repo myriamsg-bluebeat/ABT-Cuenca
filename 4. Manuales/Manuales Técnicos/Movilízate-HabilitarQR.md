@@ -20,6 +20,7 @@
 ---
 
 ## 🟩 Fase 1: Inicialización (`initQr`)
+<img width="678" height="576" alt="ABT5" src="https://github.com/user-attachments/assets/d1d221ed-bb05-4ba5-8a0f-dc5315fc422e" />
 
 Este es el punto de partida la primera vez que el usuario abre la pantalla del QR.
 
