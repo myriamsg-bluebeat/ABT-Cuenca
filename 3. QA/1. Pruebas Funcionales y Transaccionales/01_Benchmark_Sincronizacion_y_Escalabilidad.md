@@ -1,6 +1,6 @@
 # Informe rendimiento en 1 equipo
 
-**Dispositivo:** Validador Offline (IoT)  
+**Dispositivo:** Equipo Validador
 **Estado:** Pruebas de carga e inserción
 
 Este documento detalla los tiempos de descarga, procesamiento e inserción en base de datos local, así como el análisis de consumo de ancho de banda e infraestructura para una unidad individual bajo el escenario de prueba actual.
