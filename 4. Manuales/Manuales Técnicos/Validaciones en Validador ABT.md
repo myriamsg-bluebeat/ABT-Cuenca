@@ -1,4 +1,3 @@
-```markdown
 # Índice
 * [Flujo de Validador Clipp ABT](#flujo-de-validador-clipp-abt)
   * [Tarjeta Movilízate](#tarjeta-movilízate)
