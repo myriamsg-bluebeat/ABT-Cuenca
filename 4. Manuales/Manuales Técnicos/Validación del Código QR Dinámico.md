@@ -1,5 +1,18 @@
 # Documentación Técnica: Validación de QR - Validador
 
+## 📋 Índice
+1. [🔄 Flujo de Transacción Completo (Método QR)](#-flujo-de-transacción-completo-método-qr)
+2. [🛠️ Procesamiento Local](#️-procesamiento-local)
+   - [1. checkQR (`suspend fun`)](#1-checkqr-suspend-fun)
+   - [2. tariffEvaluator (`private suspend fun`)](#2-tariffevaluator-private-suspend-fun)
+   - [3. insertBDTransaction (`private suspend fun`)](#3-insertbdtransaction-private-suspend-fun)
+   - [4. registerPayment (`suspend fun`)](#4-registerpayment-suspend-fun)
+   - [5. saveNewBalance (`private suspend fun`)](#5-savenewbalance-private-suspend-fun)
+3. [📡 Sincronización (RabbitMQ)](#-sincronización-rabbitmq)
+   - [1. setupConsumer (`private fun`)](#1-setupconsumer-private-fun)
+
+---
+
 > Este documento detalla el flujo de validación y las funciones internas del dispositivo **Validador ABT (Sistema de Transacciones)**, enfocándose exclusivamente en el **procesamiento de códigos QR**.  
 > El proceso asegura la autenticidad, vigencia y correcta aplicación de tarifas.  
 > **Proyecto:** ABT - Sistema de Transacciones | **Fecha:** Octubre 2025
