@@ -12,7 +12,10 @@ Este documento describe los flujos funcionales principales del sistema de valida
 
 ---
 
+
 ## 1. 💳 Flujo de Validación: Tarjeta Movilízate (Híbrido CBT/ABT)
+
+<img width="768" height="540" alt="ABT1" src="https://github.com/user-attachments/assets/d7082db9-9884-45e1-a3d8-2ebeb7a3cdd0" />
 
 Este flujo prioriza la validación como tarjeta de saldo (CBT) y, si es insuficiente, intenta la validación basada en cuenta (ABT).
 
@@ -44,6 +47,8 @@ Este flujo prioriza la validación como tarjeta de saldo (CBT) y, si es insufici
 
 Este flujo permite el pago utilizando credenciales digitales generadas por una aplicación móvil, que son validadas por el SDK ABT.
 
+<img width="778" height="431" alt="ABT3" src="https://github.com/user-attachments/assets/de41f9a9-6f49-4689-b6f2-ede156fdf214" />
+
 ### Componentes Clave
 
 | Módulo | Función |
@@ -54,6 +59,7 @@ Este flujo permite el pago utilizando credenciales digitales generadas por una a
 
 ### Pasos del Proceso
 
+
 | # | Módulo Emisor | Módulo Receptor | Acción / Descripción |
 | :--- | :--- | :--- | :--- |
 | 1 | App SIR | App CLIPP | **Escanea QR:** Recibe la información del código QR, la procesa a texto plano y la envía a la App CLIPP. |
@@ -63,7 +69,7 @@ Este flujo permite el pago utilizando credenciales digitales generadas por una a
 | 4' | App CLIPP | App SIR | **Finalización de Transacción:** Termina el proceso y envía el resultado a App SIR. |
 
 ## 3. 🆔 Flujo de Validación: Cédula Azul (DNIe)
-
+<img width="811" height="540" alt="ABT2" src="https://github.com/user-attachments/assets/45153f25-8f4b-4bf1-a390-ba671e93d800" />
 Este flujo utiliza la cédula de identidad electrónica (DNIe) como credencial de identificación para acceder a una cuenta de transporte ABT.
 
 ### Componentes Clave
