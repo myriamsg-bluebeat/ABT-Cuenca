@@ -631,6 +631,7 @@ POST https://dev-recaudo.clipp.app/auth/client/user/check-sms/{code}/{userId}/{d
 Body:
 {
   "code": "123456",
+  ```
   "userId": "12345",
   "deviceId": "abcde",
   "applicationId": "mobilize-app",
