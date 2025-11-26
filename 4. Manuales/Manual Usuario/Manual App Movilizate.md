@@ -375,6 +375,7 @@ POST https://dev-recaudo.clipp.app/auth/client/user/send-sms-v2/{countryCode}/{p
 ```http
 POST https://dev-recaudo.clipp.app/auth/client/user/send-sms/{countryCode}/{phone}/{userId}/{deviceId}/{applicationId}/{version}
 ```
+```http
 Headers:
 Authorization: Bearer {token}
 Body:
@@ -386,6 +387,7 @@ Body:
   "applicationId": "mobilize-app",
   "version": 2
 }
+```
 ### 🔐 Auth | Login con Mobilize
 
 **Método:** POST  
@@ -448,6 +450,7 @@ Body:
 ```http
 POST https://dev-recaudo.clipp.app/auth/auth/application/{deviceId}/{applicationId}/{version}
 ```
+```http
 Body:
 {
   "email": "usuario@example.com",
@@ -464,3 +467,173 @@ Body:
   "phone": "987654321",
   "phoneVerified": true
 }
+```
+### 🔐 Auth | Marcar notificación push como vista
+
+**Método:** PATCH  
+**URL:** `https://dev-recaudo.clipp.app/ad/client/push/set-as-views/{userId}/{deviceId}/{pushId}/{version}`
+
+---
+
+#### Parámetros
+
+| Campo    | Tipo    | Descripción               |
+|----------|---------|---------------------------|
+| userId   | String  | ID del usuario            |
+| deviceId | String  | ID único del dispositivo  |
+| pushId   | Number  | ID de la notificación push|
+| version  | Number  | Versión de la aplicación  |
+
+---
+
+#### Respuesta 200 (Success)
+
+| Campo   | Tipo    | Descripción                     |
+|---------|---------|---------------------------------|
+| success | Boolean | Notificación marcada como vista |
+
+---
+
+#### Errores 4xx
+
+| Nombre       | Descripción                  |
+|--------------|------------------------------|
+| PushNotFound | Notificación no encontrada   |
+
+---
+
+#### Ejemplo de petición
+
+```http
+PATCH https://dev-recaudo.clipp.app/ad/client/push/set-as-views/{userId}/{deviceId}/{pushId}/{version}
+```
+```http
+Body:
+{
+  "userId": "12345",
+  "deviceId": "abcde",
+  "pushId": 987,
+  "version": 2
+}
+```
+### 🔐 Auth | Verificar configuración del usuario
+
+**Método:** PATCH  
+**URL:** `https://dev-recaudo.clipp.app/auth/auth/check/{userId}/{deviceId}/{applicationId}/{appId}/{version}`
+
+---
+
+#### Headers
+
+| Campo         | Tipo   | Descripción               |
+|---------------|--------|---------------------------|
+| Authorization | String | Token JWT de autenticación |
+| locale        | String | Idioma de la aplicación    |
+
+---
+
+#### Parámetros
+
+| Campo         | Tipo    | Descripción               |
+|---------------|---------|---------------------------|
+| userId        | String  | ID del usuario            |
+| deviceId      | String  | ID único del dispositivo  |
+| applicationId | String  | ID de la aplicación       |
+| appId         | String  | ID de la app              |
+| version       | Number  | Versión de la aplicación  |
+
+---
+
+#### Respuesta 200 (Success)
+
+| Campo     | Tipo    | Descripción               |
+|-----------|---------|---------------------------|
+| isValid   | Boolean | Configuración válida      |
+| settings  | Object  | Configuraciones del usuario |
+| theme     | String  | Tema de la aplicación     |
+| language  | String  | Idioma de la aplicación   |
+
+---
+
+#### Errores 4xx
+
+| Nombre             | Descripción                  |
+|--------------------|------------------------------|
+| Unauthorized       | Usuario no autenticado       |
+| ConfigurationError | Error en la configuración    |
+
+---
+
+#### Ejemplo de petición
+
+```http
+PATCH https://dev-recaudo.clipp.app/auth/auth/check/{userId}/{deviceId}/{applicationId}/{appId}/{version}
+```
+
+```http
+Headers:
+Authorization: Bearer {token}
+locale: es
+```
+### 🔐 Auth | Verificar código SMS
+
+**Método:** POST  
+**URL:** `https://dev-recaudo.clipp.app/auth/client/user/check-sms/{code}/{userId}/{deviceId}/{applicationId}/{version}`
+
+---
+
+#### Headers
+
+| Campo         | Tipo   | Descripción               |
+|---------------|--------|---------------------------|
+| Authorization | String | Token JWT de autenticación |
+
+---
+
+#### Parámetros
+
+| Campo         | Tipo    | Descripción               |
+|---------------|---------|---------------------------|
+| code          | String  | Código SMS recibido       |
+| userId        | String  | ID del usuario            |
+| deviceId      | String  | ID único del dispositivo  |
+| applicationId | String  | ID de la aplicación       |
+| version       | Number  | Versión de la aplicación  |
+
+---
+
+#### Respuesta 200 (Success)
+
+| Campo          | Tipo    | Descripción                     |
+|----------------|---------|---------------------------------|
+| success        | Boolean | Código verificado correctamente |
+| message        | String  | Mensaje de confirmación         |
+| phoneVerified  | Boolean | Teléfono verificado             |
+
+---
+
+#### Errores 4xx
+
+| Nombre          | Descripción                  |
+|-----------------|------------------------------|
+| InvalidCode     | Código SMS inválido          |
+| CodeExpired     | Código SMS expirado          |
+| TooManyAttempts | Demasiados intentos fallidos |
+
+---
+
+#### Ejemplo de petición
+
+```http
+POST https://dev-recaudo.clipp.app/auth/client/user/check-sms/{code}/{userId}/{deviceId}/{applicationId}/{version}
+```
+```http
+Body:
+{
+  "code": "123456",
+  "userId": "12345",
+  "deviceId": "abcde",
+  "applicationId": "mobilize-app",
+  "version": 2
+}
+```
