@@ -1,0 +1,233 @@
+# Documentación de Funciones
+
+**Proyecto:** ABT - Sistema de Transacciones  
+**Fecha:** Octubre 2025
+
+---
+
+## 📋 Tabla de Contenido
+1. [checkQR](#checkqr)
+2. [getBalanceAndTariff](#getbalanceandtariff)
+3. [tariffEvaluator](#tariffevaluator)
+4. [insertBDTransaction](#insertbdtransaction)
+5. [registerPayment](#registerpayment)
+6. [saveNewBalance](#savenewbalance)
+7. [setupConsumer](#setupconsumer)
+8. [processQueueSequentially](#processqueuesequentially)
+9. [synchronization](#synchronization)
+10. [insertTableBalance](#inserttablebalance)
+11. [responseNewDni](#responsenewdni)
+
+---
+
+## 1. checkQR (PÚBLICA, SUSPEND)
+
+**Archivo:** `HomeController.kt`  
+**Tipo:** `suspend fun`
+
+### Descripción
+Valida y procesa un código QR para realizar una transacción. Decodifica la imagen QR (pantalla o impresa), verifica autenticidad mediante desencriptación, valida vigencia temporal y procesa el pago.
+
+### Parámetros
+| Parámetro       | Tipo   | Descripción |
+|-----------------|--------|-------------|
+| `transactionId` | String | Identificador único de la transacción |
+| `qr`            | String | Código QR en formato string con información encriptada |
+
+### Retorno
+`JSONObject` - Resultado de la operación (éxito o error con detalles)
+
+### Fases de Procesamiento
+- ✅ **Fase 1:** Validaciones básicas (timeout 500ms)  
+- 🔐 **Fase 2:** Decodificación y extracción (divide en 4 secciones)  
+- 💾 **Fase 3:** Consulta en BD (clave privada)  
+- 🔓 **Fase 4:** Desencriptación con RSA  
+- 🛡️ **Fase 5:** Validaciones de seguridad (expiración, replay attacks con steep)  
+- 💳 **Fase 6:** Procesamiento de transacción (evalúa tarifa y saldo)
+
+### Códigos de Error
+| Código     | Descripción |
+|------------|-------------|
+| ERROR_404  | QR inválido o datos incorrectos |
+| ERROR_409  | QR duplicado |
+| ERROR_400  | Formato inválido |
+| ERROR_410  | QR expirado |
+| ERROR_500  | Error inesperado |
+
+---
+
+## 2. getBalanceAndTariff (PÚBLICA, SUSPEND)
+
+**Archivo:** `HomeController.kt`  
+**Tipo:** `suspend fun`
+
+### Descripción
+Obtiene balance y tarifa asociados a un DNI y procesa evaluación de transacción. Usado para **lectura NFC** (tarjeta o cédula).
+
+### Parámetros
+| Parámetro       | Tipo     | Descripción |
+|-----------------|----------|-------------|
+| `transactionId` | String?  | ID de transacción |
+| `dni`           | String?  | Documento Nacional de Identidad |
+| `version`       | String?  | Versión del balance |
+| `synchronized`  | Int?     | Transacciones sincronizadas |
+| `balance`       | String?  | Balance actual |
+
+### Retorno
+`JSONObject` - Datos del balance, tarifa y resultado
+
+### Procesamiento
+1. Busca balance y tarifa por DNI  
+2. Verifica que no esté bloqueado  
+3. Llama a `tariffEvaluator()`
+
+---
+
+## 3. tariffEvaluator (PRIVADA, SUSPEND)
+
+**Archivo:** `HomeController.kt`  
+**Tipo:** `private suspend fun`
+
+### Descripción
+Evalúa si una tarifa puede ser cobrada y actualiza balance. Compara versiones, verifica saldo y calcula nuevo balance.
+
+### Parámetros
+| Parámetro                | Tipo                  | Descripción |
+|---------------------------|-----------------------|-------------|
+| `data`                   | BalanceTariffDniDto   | Info balance/tarifa/DNI |
+| `versionCard`             | String                | Versión tarjeta |
+| `transactionId`           | String                | ID transacción |
+| `versionSynchronizedCard` | Int                   | Transacciones no sincronizadas |
+| `balance`                 | String                | Balance tarjeta |
+| `steep`                   | Int                   | Contador secuencial |
+
+### Fases
+1. Estado de sincronización  
+2. Comparar versiones  
+3. Validar saldo  
+4. Calcular balance  
+5. Registrar en BD  
+6. Responder JSON
+
+---
+
+## 4. insertBDTransaction (PRIVADA, SUSPEND)
+
+**Archivo:** `HomeController.kt`  
+**Tipo:** `private suspend fun`
+
+### Descripción
+Inserta registro de transacción en BD local.
+
+### Campos
+| Campo           | Descripción              | Default |
+|-----------------|--------------------------|---------|
+| transactionId   | ID transacción           | ""      |
+| balancePrevious | Balance antes del cobro  | "0.00"  |
+| balanceCurrent  | Balance después del cobro| "0.00"  |
+| tariff          | Monto cobrado            | -       |
+| status          | Estado inicial           | STATUS_ACTIVE |
+| steep           | Contador anti-replay     | -       |
+
+---
+
+## 5. registerPayment (PÚBLICA, SUSPEND)
+
+**Archivo:** `HomeController.kt`  
+**Tipo:** `suspend fun`
+
+### Descripción
+Registra pago y actualiza balance en BD.
+
+### Procesamiento
+1. Verifica transacción en BD  
+2. Obtiene datos de balance  
+3. Llama a `saveNewBalance()`
+
+---
+
+## 6. saveNewBalance (PRIVADA, SUSPEND)
+
+**Archivo:** `HomeController.kt`  
+**Tipo:** `private suspend fun`
+
+### Descripción
+Guarda nuevo balance, actualiza estado a **PAGADO**, recalcula y notifica vía RabbitMQ.
+
+---
+
+## 7. setupConsumer (PRIVADA)
+
+**Archivo:** `RabbitMqManager.kt`  
+**Tipo:** `private fun`
+
+### Descripción
+Configura consumidor de mensajes RabbitMQ.
+
+### Mensaje JSON
+| Campo           | Clave | Descripción |
+|-----------------|-------|-------------|
+| userId          | "u"   | ID usuario |
+| tariffId        | "z"   | ID tarifa |
+| version         | "v"   | Versión balance |
+| transactionId   | "t"   | ID transacción |
+| balanceId       | "x"   | ID balance |
+| typeTransaction | "w"   | Tipo transacción |
+| balanceCurrent  | "b"   | Balance actual |
+| dniID           | "d"   | ID DNI |
+| steep           | "s"   | Contador |
+| hash            | "h"   | Hash validación |
+
+---
+
+## 8. processQueueSequentially (PRIVADA, SUSPEND)
+
+**Archivo:** `RabbitMqManager.kt`  
+**Tipo:** `private suspend fun`
+
+### Descripción
+Procesa mensajes de la cola secuencialmente.  
+Ventajas: Consistencia, orden, integridad, simplicidad.
+
+---
+
+## 9. synchronization (PRIVADA, SUSPEND)
+
+**Archivo:** `RabbitMqManager.kt`  
+**Tipo:** `private suspend fun`
+
+### Descripción
+Sincroniza datos recibidos de RabbitMQ con BD local.
+
+### Tipos de Transacciones
+| Tipo                     | Descripción         | Acción |
+|---------------------------|---------------------|--------|
+| TYPE_TRANSACTION          | Transacción normal  | Actualiza balance |
+| TYPE_RECHARGE             | Recarga saldo       | Similar |
+| TYPE_INSERT_USER          | Nuevo usuario       | Inserta balance + solicita DNI |
+| TYPE_SYNCHRONIZED_BALANCE | Resync balances     | Elimina locales + solicita servidor |
+| TYPE_SYNCHRONIZED_DNI     | Resync DNIs         | Elimina locales + solicita servidor |
+| TYPE_SYNCHRONIZED_TARIFF  | Resync tarifas      | Elimina locales + solicita servidor |
+| TYPE_SYNCHRONIZED_ALL     | Resync completo     | Resincroniza todo |
+
+---
+
+## 10. insertTableBalance (PRIVADA)
+
+**Archivo:** `RabbitMqManager.kt`  
+**Tipo:** `private fun`
+
+### Descripción
+Inserta nuevo balance en BD local.
+
+```kotlin
+ModelDBBalance(
+    balanceId: Long,
+    tariffId: Long,
+    userId: Long,
+    balance: String,
+    version: String,
+    hash: String,
+    1,   // Estado activo
+    0    // No sincronizado
+)
