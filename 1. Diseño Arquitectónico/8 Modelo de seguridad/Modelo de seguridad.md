@@ -1,5 +1,35 @@
 # Arquitectura de Seguridad del Sistema Híbrido CBT + ABT
 
+```markdown
+# Lista de Empaque
+
+## Índice
+* [Ropa](#ropa)
+* [Calzado](#calzado)
+* [Higiene](#higiene)
+* [Electrónica](#electrónica)
+* [Documentos](#documentos)
+
+## <a id="ropa"></a>Ropa
+*   **Artículos principales:** Camisetas, pantalones, vestidos, chaqueta
+*   **Notas / Recordatorios:** Revisar clima del destino
+
+## <a id="calzado"></a>Calzado
+*   **Artículos principales:** Zapatillas, sandalias, zapatos formales
+*   **Notas / Recordatorios:** Llevar calcetines suficientes
+
+## <a id="higiene"></a>Higiene
+*   **Artículos principales:** Cepillo de dientes, pasta, desodorante, shampoo
+*   **Notas / Recordatorios:** Líquidos en envases pequeños
+
+## <a id="electrónica"></a>Electrónica
+*   **Artículos principales:** Teléfono, cargador, audífonos, adaptador
+*   **Notas / Recordatorios:** Verificar voltaje del país
+
+## <a id="documentos"></a>Documentos
+*   *(Pendiente de completar)*
+```
+
 ## Introducción
 ![WhatsApp Image 2025-11-27 at 11 17 43 AM](https://github.com/user-attachments/assets/7f8915f4-76f0-4a4f-b73e-7e89560da715)
 
